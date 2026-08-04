@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  // Core Cinematic Dark Palette - Exact Prompt Spec
-  static const Color primaryBg      = Color(0xFF0B0B0D); // Primary Background #0B0B0D
-  static const Color secondaryBg    = Color(0xFF151515); // Secondary Background #151515
-  static const Color cardBg         = Color(0xFF1D1D1F); // Card Background #1D1D1F
+  // Core Cinematic Dark Palette - Lighter Glass Theme
+  static const Color primaryBg      = Color(0xFF12141D); // Lighter Slate #12141D
+  static const Color secondaryBg    = Color(0xFF191C28); // Secondary Background #191C28
+  static const Color cardBg         = Color(0xFF222636); // Card Background #222636
   
-  static const Color primaryAccent  = Color(0xFFC41E2F); // Deep Cinema Red
-  static const Color secondaryAccent= Color(0xFF6E0F1A); // Dark Crimson
+  static const Color primaryAccent  = Color(0xFFE50914); // Netflix Crimson Red
+  static const Color secondaryAccent= Color(0xFF9E0B16); // Deep Crimson
   static const Color textPrimary    = Color(0xFFFFFFFF); // Pure White
-  static const Color textSecondary  = Color(0xFFA0A0A0); // Soft Grey
-  static const Color textDisabled   = Color(0xFF55555A); // Soft Muted Grey
+  static const Color textSecondary  = Color(0xFFB0B3C0); // Soft Slate Grey
+  static const Color textDisabled   = Color(0xFF6B7082); // Soft Muted Grey
   
-  static const Color divider        = Color(0x1AFFFFFF); // Almost Invisible (10% White)
+  static const Color divider        = Color(0x26FFFFFF); // Almost Invisible (15% White)
   
   // Legacy aliases for backward compatibility across existing widgets
   static const Color deepBlack    = primaryBg;
   static const Color darkGraphite = secondaryBg;
   static const Color cardSurface  = cardBg;
-  static const Color elevated     = Color(0xFF242428);
+  static const Color elevated     = Color(0xFF2B3044);
   static const Color deepRed      = primaryAccent;
   static const Color red          = Color(0xFFE50914);
-  static const Color redFaded     = Color(0x33C41E2F);
+  static const Color redFaded     = Color(0x33E50914);
 
   // Core Light Palette
   static const Color lightBg        = Color(0xFFF5F5F7);
@@ -41,26 +41,28 @@ class AppColors {
   static const Color white15      = Color(0x26FFFFFF);
 
   // Signature Gold
-  static const Color gold         = Color(0xFFD4AF37);
-  static const Color goldLight    = Color(0xFFE8C84A);
-  static const Color goldDark     = Color(0xFFAA8C2A);
-  static const Color goldFaded    = Color(0x33D4AF37);
+  static const Color gold         = Color(0xFFF5C518);
+  static const Color goldLight    = Color(0xFFFFD700);
+  static const Color goldDark     = Color(0xFFC79A00);
+  static const Color goldFaded    = Color(0x33F5C518);
 
   // Glassmorphism
-  static const Color glass        = Color(0x1AFFFFFF);
-  static const Color glassBorder  = Color(0x26FFFFFF);
+  static const Color glass        = Color(0x2BFFFFFF);
+  static const Color glassBorder  = Color(0x38FFFFFF);
 }
 
 class AppTheme {
   static ThemeData get darkTheme {
     final base = ThemeData.dark();
-    final outfitText = GoogleFonts.outfitTextTheme(base.textTheme);
+    final fontTheme = GoogleFonts.schibstedGroteskTextTheme(base.textTheme);
+    final mainFontFamily = GoogleFonts.schibstedGrotesk().fontFamily;
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.primaryBg,
       primaryColor: AppColors.primaryAccent,
+      fontFamily: mainFontFamily,
 
       colorScheme: const ColorScheme.dark(
         primary:                 AppColors.primaryAccent,
@@ -73,14 +75,14 @@ class AppTheme {
         outline:                 AppColors.divider,
       ),
 
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor:        Colors.transparent,
         elevation:              0,
         scrolledUnderElevation: 0,
         centerTitle:            false,
-        iconTheme:              IconThemeData(color: AppColors.white),
+        iconTheme:              const IconThemeData(color: AppColors.white),
         titleTextStyle:         TextStyle(
-          fontFamily: 'Outfit',
+          fontFamily: mainFontFamily,
           color: AppColors.white,
           fontSize: 22,
           fontWeight: FontWeight.w700,
@@ -111,38 +113,38 @@ class AppTheme {
         elevation: 0,
       ),
 
-      textTheme: outfitText.copyWith(
-        displayLarge: outfitText.displayLarge?.copyWith(
+      textTheme: fontTheme.copyWith(
+        displayLarge: fontTheme.displayLarge?.copyWith(
           color: AppColors.white,
           fontWeight: FontWeight.w800,
           letterSpacing: -0.5,
         ),
-        displayMedium: outfitText.displayMedium?.copyWith(
+        displayMedium: fontTheme.displayMedium?.copyWith(
           color: AppColors.white,
           fontWeight: FontWeight.w700,
         ),
-        headlineLarge: outfitText.headlineLarge?.copyWith(
+        headlineLarge: fontTheme.headlineLarge?.copyWith(
           color: AppColors.white,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.3,
         ),
-        headlineMedium: outfitText.headlineMedium?.copyWith(
+        headlineMedium: fontTheme.headlineMedium?.copyWith(
           color: AppColors.white,
           fontWeight: FontWeight.w600,
         ),
-        titleLarge: outfitText.titleLarge?.copyWith(
+        titleLarge: fontTheme.titleLarge?.copyWith(
           color: AppColors.white,
           fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
-        titleMedium: outfitText.titleMedium?.copyWith(
+        titleMedium: fontTheme.titleMedium?.copyWith(
           color: AppColors.white,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: outfitText.bodyLarge?.copyWith(color: AppColors.white90),
-        bodyMedium: outfitText.bodyMedium?.copyWith(color: AppColors.textSecondary),
-        bodySmall: outfitText.bodySmall?.copyWith(color: AppColors.textSecondary),
-        labelLarge: outfitText.labelLarge?.copyWith(
+        bodyLarge: fontTheme.bodyLarge?.copyWith(color: AppColors.white90),
+        bodyMedium: fontTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+        bodySmall: fontTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+        labelLarge: fontTheme.labelLarge?.copyWith(
           color: AppColors.white,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,

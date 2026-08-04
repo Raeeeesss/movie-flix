@@ -74,16 +74,9 @@ final aiRecommendedMoviesProvider = FutureProvider<List<Movie>>((ref) async {
   final prefs = ref.watch(userPreferencesProvider);
   final repo = ref.watch(movieRepositoryProvider);
 
-  String query = 'malayalam';
-  if (prefs.favoriteActors.isNotEmpty) {
-    query = prefs.favoriteActors.first.toLowerCase();
-  } else if (prefs.preferredLanguages.isNotEmpty) {
-    query = prefs.preferredLanguages.first.toLowerCase();
-  }
-
-  final movies = await repo.fetchCategory(query, page: 1);
-  movies.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
-  return movies;
+  final List<Movie> catalog = List.from(repo.masterCatalog);
+  catalog.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
+  return catalog;
 });
 
 /// ⭐ Section 2: Because You Like [Favorite Actor]
@@ -91,14 +84,15 @@ final becauseYouWatchedMoviesProvider = FutureProvider<List<Movie>>((ref) async 
   final prefs = ref.watch(userPreferencesProvider);
   final repo = ref.watch(movieRepositoryProvider);
 
-  String query = 'mohanlal';
+  String query = 'tom cruise';
   if (prefs.favoriteActors.isNotEmpty) {
     query = prefs.favoriteActors.first.toLowerCase();
   }
 
   final movies = await repo.fetchCategory(query, page: 1);
-  movies.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
-  return movies;
+  final List<Movie> sorted = List.from(movies);
+  sorted.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
+  return sorted;
 });
 
 /// ⭐ Section 3: Movies Starring [Favorite Actress]
@@ -106,14 +100,15 @@ final actressPersonalizedMoviesProvider = FutureProvider<List<Movie>>((ref) asyn
   final prefs = ref.watch(userPreferencesProvider);
   final repo = ref.watch(movieRepositoryProvider);
 
-  String query = 'sai pallavi';
+  String query = 'zoe saldaña';
   if (prefs.favoriteActresses.isNotEmpty) {
     query = prefs.favoriteActresses.first.toLowerCase();
   }
 
   final movies = await repo.fetchCategory(query, page: 1);
-  movies.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
-  return movies;
+  final List<Movie> sorted = List.from(movies);
+  sorted.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
+  return sorted;
 });
 
 /// ⭐ Section 4: Popular in [Preferred Language]
@@ -121,14 +116,15 @@ final popularInLanguageMoviesProvider = FutureProvider<List<Movie>>((ref) async 
   final prefs = ref.watch(userPreferencesProvider);
   final repo = ref.watch(movieRepositoryProvider);
 
-  String query = 'malayalam';
+  String query = 'english';
   if (prefs.preferredLanguages.isNotEmpty) {
     query = prefs.preferredLanguages.first.toLowerCase();
   }
 
   final movies = await repo.fetchCategory(query, page: 1);
-  movies.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
-  return movies;
+  final List<Movie> sorted = List.from(movies);
+  sorted.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
+  return sorted;
 });
 
 /// ⭐ Section 5: Directed by [Favorite Director]
@@ -136,14 +132,15 @@ final directorPersonalizedMoviesProvider = FutureProvider<List<Movie>>((ref) asy
   final prefs = ref.watch(userPreferencesProvider);
   final repo = ref.watch(movieRepositoryProvider);
 
-  String query = 'lijo jose pellissery';
+  String query = 'christopher nolan';
   if (prefs.favoriteDirectors.isNotEmpty) {
     query = prefs.favoriteDirectors.first.toLowerCase();
   }
 
   final movies = await repo.fetchCategory(query, page: 1);
-  movies.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
-  return movies;
+  final List<Movie> sorted = List.from(movies);
+  sorted.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
+  return sorted;
 });
 
 /// ⭐ Section 6: [Language] [Genre] Blockbusters
@@ -151,11 +148,12 @@ final genreLanguagePersonalizedMoviesProvider = FutureProvider<List<Movie>>((ref
   final prefs = ref.watch(userPreferencesProvider);
   final repo = ref.watch(movieRepositoryProvider);
 
-  final lang = prefs.preferredLanguages.isNotEmpty ? prefs.preferredLanguages.first.toLowerCase() : 'malayalam';
+  final lang = prefs.preferredLanguages.isNotEmpty ? prefs.preferredLanguages.first.toLowerCase() : 'english';
   final genre = prefs.favoriteGenres.isNotEmpty ? prefs.favoriteGenres.first.toLowerCase() : 'action';
   final query = '$lang $genre';
 
   final movies = await repo.fetchCategory(query, page: 1);
-  movies.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
-  return movies;
+  final List<Movie> sorted = List.from(movies);
+  sorted.sort((a, b) => scoreMovie(b, prefs).compareTo(scoreMovie(a, prefs)));
+  return sorted;
 });

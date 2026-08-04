@@ -41,10 +41,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _onRefresh() async {
     ref.read(movieRepositoryProvider).clearCache();
+    ref.invalidate(featuredHeroMoviesProvider);
     ref.invalidate(aiRecommendedMoviesProvider);
     ref.invalidate(becauseYouWatchedMoviesProvider);
     ref.invalidate(actressPersonalizedMoviesProvider);
-    ref.invalidate(popularInLanguageMoviesProvider);
     ref.invalidate(directorPersonalizedMoviesProvider);
     ref.invalidate(genreLanguagePersonalizedMoviesProvider);
     ref.invalidate(trendingMoviesProvider);
@@ -63,6 +63,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.invalidate(classicMoviesProvider);
     ref.invalidate(southMoviesProvider);
     ref.invalidate(bollywoodMoviesProvider);
+    ref.invalidate(popularInLanguageMoviesProvider);
   }
 
   @override
@@ -70,35 +71,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final prefs = ref.watch(userPreferencesProvider);
     final userName = prefs.userName.isNotEmpty ? prefs.userName : 'Cinematic Explorer';
 
-    final topActor    = prefs.favoriteActors.isNotEmpty ? prefs.favoriteActors.first : 'Mohanlal';
-    final topActress  = prefs.favoriteActresses.isNotEmpty ? prefs.favoriteActresses.first : 'Sai Pallavi';
-    final topDirector = prefs.favoriteDirectors.isNotEmpty ? prefs.favoriteDirectors.first : 'Lijo Jose Pellissery';
-    final mainLang    = prefs.preferredLanguages.isNotEmpty ? prefs.preferredLanguages.first : 'Malayalam';
-    final mainIndustry= prefs.favoriteIndustries.isNotEmpty ? prefs.favoriteIndustries.first : 'Mollywood';
-    final topGenre    = prefs.favoriteGenres.isNotEmpty ? prefs.favoriteGenres.first : 'Action';
+    final topActor    = prefs.favoriteActors.isNotEmpty ? prefs.favoriteActors.first : 'Tom Cruise';
+    final topActress  = prefs.favoriteActresses.isNotEmpty ? prefs.favoriteActresses.first : 'Zoe Saldaña';
+    final topDirector = prefs.favoriteDirectors.isNotEmpty ? prefs.favoriteDirectors.first : 'Christopher Nolan';
 
     final sections = <_SectionConfig>[
-      _SectionConfig('Latest movies', nowPlayingMoviesProvider, 'now_playing', isLandscape: false),
-      _SectionConfig('Top rated', topRatedMoviesProvider, 'toprated', isLandscape: true),
-      _SectionConfig('Recommended for you', aiRecommendedMoviesProvider, 'airecs', isLandscape: false),
-      _SectionConfig('Because you like $topActor', becauseYouWatchedMoviesProvider, 'because_actor', isLandscape: false),
+      _SectionConfig('Latest Releases', nowPlayingMoviesProvider, 'now_playing', isLandscape: false),
+      _SectionConfig('Top Rated Blockbusters', topRatedMoviesProvider, 'toprated', isLandscape: true),
+      _SectionConfig('Recommended for You', aiRecommendedMoviesProvider, 'airecs', isLandscape: false),
+      _SectionConfig('Because You Like $topActor', becauseYouWatchedMoviesProvider, 'because_actor', isLandscape: false),
       _SectionConfig('Starring $topActress', actressPersonalizedMoviesProvider, 'actress', isLandscape: false),
       _SectionConfig('Directed by $topDirector', directorPersonalizedMoviesProvider, 'director', isLandscape: false),
-      _SectionConfig('Trending in $mainIndustry', trendingMoviesProvider, 'trending', isLandscape: true),
-      _SectionConfig('Popular blockbusters', popularMoviesProvider, 'popular', isLandscape: false),
-      _SectionConfig('Coming soon', upcomingMoviesProvider, 'upcoming', isLandscape: false),
-      _SectionConfig('$mainLang $topGenre movies', genreLanguagePersonalizedMoviesProvider, 'genre_lang', isLandscape: false),
-      _SectionConfig('Popular in $mainLang', popularInLanguageMoviesProvider, 'poplang', isLandscape: false),
+      _SectionConfig('Trending Hollywood Hits', trendingMoviesProvider, 'trending', isLandscape: true),
+      _SectionConfig('Popular Movies', popularMoviesProvider, 'popular', isLandscape: false),
+      _SectionConfig('Coming Soon', upcomingMoviesProvider, 'upcoming', isLandscape: false),
       _SectionConfig('Action & Thrillers', actionMoviesProvider, 'action', isLandscape: false),
-      _SectionConfig('Comedy classics', comedyMoviesProvider, 'comedy', isLandscape: false),
-      _SectionConfig('Sci-Fi & Fantasy', scifiMoviesProvider, 'scifi', isLandscape: false),
-      _SectionConfig('Drama & Cinema', dramaMoviesProvider, 'drama', isLandscape: false),
+      _SectionConfig('Sci-Fi & Space Adventures', scifiMoviesProvider, 'scifi', isLandscape: false),
+      _SectionConfig('Award-Winning Drama', dramaMoviesProvider, 'drama', isLandscape: false),
       _SectionConfig('Horror & Mystery', horrorMoviesProvider, 'horror', isLandscape: false),
-      _SectionConfig('Edge of your seat thrillers', thrillerMoviesProvider, 'thriller', isLandscape: false),
-      _SectionConfig('Animated gems', animationMoviesProvider, 'animation', isLandscape: false),
-      _SectionConfig('Editor\'s picks & awards', awardWinnersProvider, 'awards', isLandscape: true),
-      _SectionConfig('South cinema', southMoviesProvider, 'south', isLandscape: false),
-      _SectionConfig('Bollywood classics', bollywoodMoviesProvider, 'bollywood', isLandscape: false),
+      _SectionConfig('Edge-of-Your-Seat Thrillers', thrillerMoviesProvider, 'thriller', isLandscape: false),
+      _SectionConfig('Animated Gems', animationMoviesProvider, 'animation', isLandscape: false),
+      _SectionConfig('Editor\'s Picks & Oscar Winners', awardWinnersProvider, 'awards', isLandscape: true),
     ];
 
     return Scaffold(
@@ -114,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             controller: _scrollController,
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // ── Top Bar Header ──────────────────────────────────────────
+              // â”€â”€ Top Bar Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               SliverToBoxAdapter(
                 child: Container(
                   padding: EdgeInsets.fromLTRB(
@@ -176,12 +169,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
-              // ── Hero Banner Section ─────────────────────────────────────
+              // â”€â”€ Hero Banner Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               SliverToBoxAdapter(
                 child: Consumer(
                   builder: (context, ref, child) {
-                    final aiRecsAsync = ref.watch(aiRecommendedMoviesProvider);
-                    return aiRecsAsync.when(
+                    final featuredAsync = ref.watch(featuredHeroMoviesProvider);
+                    return featuredAsync.when(
                       data: (movies) => HeroBanner(movies: movies),
                       loading: () => const _HeroSkeleton(),
                       error: (err, stack) => const _HeroSkeleton(),
@@ -190,12 +183,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
-              // ── Live Cinema News & Industry Pulse ───────────────────────
-              const SliverToBoxAdapter(
-                child: _LiveMovieNewsWidget(),
-              ),
-
-              // ── Home Category Sections (Lazy Evaluated) ──────────────────
+              // ────────────────── Home Category Sections (Lazy Evaluated) ──────────────────
               SliverPadding(
                 padding: const EdgeInsets.only(top: 16, bottom: 40),
                 sliver: SliverList(
@@ -348,8 +336,8 @@ class _HeroSkeleton extends StatelessWidget {
       baseColor: AppColors.cardBg,
       highlightColor: AppColors.secondaryBg,
       child: Container(
-        height: 380,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        height: 230,
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: AppColors.cardBg,
           borderRadius: BorderRadius.circular(24),
@@ -404,159 +392,6 @@ class _SectionSkeleton extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _LiveMovieNewsWidget extends StatelessWidget {
-  const _LiveMovieNewsWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    final newsList = [
-      {
-        'title': 'Empuraan (Lucifer 2) World Release Date Announced',
-        'category': 'BREAKING NEWS',
-        'time': '10 mins ago',
-        'desc': 'Prithviraj Sukumaran & Mohanlal confirm 4K IMAX worldwide theatrical event.',
-        'color': const Color(0xFFE50914),
-      },
-      {
-        'title': 'Aavesham Crosses ₹150 Crore Worldwide Box Office',
-        'category': 'BOX OFFICE PULSE',
-        'time': '1 hour ago',
-        'desc': 'Fahadh Faasil starrer sets record-breaking run in Kerala & Overseas markets.',
-        'color': const Color(0xFFFFB800),
-      },
-      {
-        'title': 'Bramayugam 2 Expansion in Active Production',
-        'category': 'INDUSTRY PULSE',
-        'time': '3 hours ago',
-        'desc': 'Rahul Sadasivan hints at expanding Malabar folk horror saga with Mammootty.',
-        'color': const Color(0xFF00E5FF),
-      },
-      {
-        'title': 'Avatar: Fire and Ash Production Teaser Released',
-        'category': 'GLOBAL EXCLUSIVE',
-        'time': '5 hours ago',
-        'desc': 'James Cameron showcases revolutionary new Pandora visual effects technology.',
-        'color': const Color(0xFF9E00FF),
-      },
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryAccent,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Live Cinema Pulse & News',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.2,
-                  ),
-                ),
-                const Spacer(),
-                const Text(
-                  'LIVE UPDATING',
-                  style: TextStyle(
-                    color: AppColors.primaryAccent,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 120,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: newsList.length,
-              itemBuilder: (context, index) {
-                final item = newsList[index];
-                final catColor = item['color'] as Color;
-                return Container(
-                  width: 280,
-                  margin: const EdgeInsets.only(right: 14),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardBg,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: catColor.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: catColor.withValues(alpha: 0.4), width: 0.5),
-                              ),
-                              child: Text(
-                                item['category'] as String,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: catColor,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            item['time'] as String,
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        item['title'] as String,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -69,15 +69,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     if (personalizedSearches.isEmpty) {
       personalizedSearches.addAll([
-        'Mohanlal',
-        'Lucifer',
-        'Drishyam',
-        'Malayalam Action',
-        'Mollywood',
-        'Malaikottai Vaaliban',
+        'Oppenheimer',
+        'Avatar',
+        'Top Gun',
+        'Dune',
+        'Interstellar',
         'Avengers',
-        'Christopher Nolan',
-        'Tom Cruise',
+        'The Dark Knight',
+        'Inception',
+        'Batman',
       ]);
     }
 

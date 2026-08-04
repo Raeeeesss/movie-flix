@@ -6,6 +6,7 @@ import '../../features/movies/presentation/screens/home_screen.dart';
 import '../../features/movies/presentation/screens/search_screen.dart';
 import '../../features/movies/presentation/screens/details_screen.dart';
 import '../../features/movies/presentation/screens/category_screen.dart';
+import '../../features/movies/presentation/screens/full_movie_player_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/watchlist/presentation/screens/watchlist_screen.dart';
@@ -28,7 +29,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const OnboardingScreen(),
     ),
 
-    // ── Main shell with NavigationBar / NavigationRail ─────────────────
+    // Main shell with NavigationBar / NavigationRail
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return _MainShell(navigationShell: navigationShell);
@@ -57,7 +58,7 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
 
-    // ── Settings Screen ────────────────────────────────────────────────
+    // Settings Screen
     GoRoute(
       path: '/settings',
       parentNavigatorKey: _rootNavigatorKey,
@@ -77,7 +78,7 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-    // ── Movie Details ──────────────────────────────────────────────────
+    // Movie Details
     GoRoute(
       path: '/movie/:id',
       parentNavigatorKey: _rootNavigatorKey,
@@ -100,7 +101,7 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-    // ── Category List Page ─────────────────────────────────────────────
+    // Category List Page
     GoRoute(
       path: '/category/:key',
       parentNavigatorKey: _rootNavigatorKey,
@@ -120,12 +121,40 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
+
+    // Full Movie Player Screen (Internet Archive & Public Domain Streams)
+    GoRoute(
+      path: '/watch/:id',
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (context, state) {
+        final movieIdStr = state.pathParameters['id'] ?? '0';
+        final movieId = int.tryParse(movieIdStr) ?? 0;
+        final movie = state.extra as Movie? ??
+            Movie(
+              id: movieId,
+              title: 'Full Movie Stream',
+              overview: 'Internet Archive Public Domain Stream',
+              voteAverage: 8.5,
+              releaseDate: '2024-01-01',
+              streamUrl: 'https://archive.org/download/his_girl_friday/his_girl_friday.mp4',
+            );
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: FullMoviePlayerScreen(movie: movie),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
+      },
+    ),
   ],
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Responsive Main Shell Scaffold (NavigationBar on Phone / NavigationRail on Tablet)
-// ─────────────────────────────────────────────────────────────────────────────
+// Responsive Main Shell
 class _MainShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
   const _MainShell({required this.navigationShell});
@@ -148,6 +177,7 @@ class _MainShell extends StatelessWidget {
             ? Row(
                 children: [
                   NavigationRail(
+                    backgroundColor: const Color(0xFF0D0D0D),
                     selectedIndex: navigationShell.currentIndex,
                     onDestinationSelected: (index) {
                       navigationShell.goBranch(
@@ -156,6 +186,10 @@ class _MainShell extends StatelessWidget {
                       );
                     },
                     labelType: NavigationRailLabelType.all,
+                    selectedIconTheme: const IconThemeData(color: AppColors.primaryAccent),
+                    selectedLabelTextStyle: const TextStyle(color: AppColors.primaryAccent, fontWeight: FontWeight.w700),
+                    unselectedIconTheme: const IconThemeData(color: Color(0xFF888888)),
+                    unselectedLabelTextStyle: const TextStyle(color: Color(0xFF888888)),
                     destinations: const [
                       NavigationRailDestination(
                         icon: Icon(Icons.home_outlined),
@@ -187,10 +221,21 @@ class _MainShell extends StatelessWidget {
         bottomNavigationBar: isWide
             ? null
             : Container(
-                decoration: const BoxDecoration(
-                  border: Border(top: BorderSide(color: AppColors.divider, width: 0.5)),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D0D0D),
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.10),
+                      width: 1,
+                    ),
+                  ),
                 ),
                 child: NavigationBar(
+                  backgroundColor: Colors.transparent,
+                  indicatorColor: AppColors.primaryAccent.withValues(alpha: 0.18),
+                  elevation: 0,
+                  height: 64,
+                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                   selectedIndex: navigationShell.currentIndex,
                   onDestinationSelected: (index) {
                     navigationShell.goBranch(
@@ -198,25 +243,41 @@ class _MainShell extends StatelessWidget {
                       initialLocation: index == navigationShell.currentIndex,
                     );
                   },
-                  destinations: const [
+                  destinations: [
                     NavigationDestination(
-                      icon: Icon(Icons.home_outlined),
-                      selectedIcon: Icon(Icons.home_rounded),
+                      icon: Icon(Icons.home_outlined,
+                          color: navigationShell.currentIndex == 0
+                              ? AppColors.primaryAccent
+                              : const Color(0xFF888888)),
+                      selectedIcon: const Icon(Icons.home_rounded,
+                          color: AppColors.primaryAccent),
                       label: 'Home',
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.search_outlined),
-                      selectedIcon: Icon(Icons.search_rounded),
+                      icon: Icon(Icons.search_outlined,
+                          color: navigationShell.currentIndex == 1
+                              ? AppColors.primaryAccent
+                              : const Color(0xFF888888)),
+                      selectedIcon: const Icon(Icons.search_rounded,
+                          color: AppColors.primaryAccent),
                       label: 'Search',
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.bookmark_border_rounded),
-                      selectedIcon: Icon(Icons.bookmark_rounded),
+                      icon: Icon(Icons.bookmark_border_rounded,
+                          color: navigationShell.currentIndex == 2
+                              ? AppColors.primaryAccent
+                              : const Color(0xFF888888)),
+                      selectedIcon: const Icon(Icons.bookmark_rounded,
+                          color: AppColors.primaryAccent),
                       label: 'My List',
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.person_outline_rounded),
-                      selectedIcon: Icon(Icons.person_rounded),
+                      icon: Icon(Icons.person_outline_rounded,
+                          color: navigationShell.currentIndex == 3
+                              ? AppColors.primaryAccent
+                              : const Color(0xFF888888)),
+                      selectedIcon: const Icon(Icons.person_rounded,
+                          color: AppColors.primaryAccent),
                       label: 'Profile',
                     ),
                   ],

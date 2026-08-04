@@ -9,6 +9,7 @@ import '../../../../app/theme/app_theme.dart';
 import '../../models/movie.dart';
 import '../../providers/movie_providers.dart';
 import '../../../watchlist/providers/watchlist_provider.dart';
+import '../../../../core/services/movie_stream_service.dart';
 import '../widgets/cast_card.dart';
 import '../widgets/movie_card.dart';
 import '../widgets/trailer_player_dialog.dart';
@@ -213,22 +214,32 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      trailersAsync.whenData((trailers) {
+                      trailersAsync.whenData((trailers) async {
                         final yt = trailers
-                            .where((t) => t.isYouTubeTrailer || t.site.toLowerCase() == 'youtube')
+                            .where((t) => t.site.toLowerCase() == 'youtube')
                             .toList();
                         if (yt.isNotEmpty) {
-                          showDialog(
-                            context: context,
-                            builder: (_) => TrailerPlayerDialog(
-                              youtubeKey: yt.first.key,
-                              title: movie.title,
-                            ),
-                          );
+                          final trailer = yt.first;
+                          if (trailer.key.startsWith('SEARCH:')) {
+                            final searchQuery = Uri.decodeComponent(trailer.key.replaceFirst('SEARCH:', ''));
+                            final uri = Uri.parse('https://www.youtube.com/results?search_query=${Uri.encodeComponent(searchQuery)}');
+                            if (await canLaunchUrl(uri)) {
+                              launchUrl(uri, mode: LaunchMode.externalApplication);
+                            }
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (_) => TrailerPlayerDialog(
+                                youtubeKey: trailer.key,
+                                title: movie.title,
+                              ),
+                            );
+                          }
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('No trailer available')),
-                          );
+                          final uri = Uri.parse('https://www.youtube.com/results?search_query=${Uri.encodeComponent("${movie.title} official trailer")}');
+                          if (await canLaunchUrl(uri)) {
+                            launchUrl(uri, mode: LaunchMode.externalApplication);
+                          }
                         }
                       });
                     },
@@ -366,44 +377,44 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Action Buttons Row: Share Movie + Large "Watch Official Trailer" YouTube Pill CTA
-                Row(
-                  children: [
-                    // Share Movie Action Button
-                    GestureDetector(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Sharing info for "${movie.title}"...')),
-                        );
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(Icons.share_rounded, color: AppColors.white, size: 24),
-                          SizedBox(height: 4),
-                          Text(
-                            'Share',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                // Primary Hero Stream CTA: WATCH FULL MOVIE (FREE)
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE50914),
+                      foregroundColor: AppColors.white,
+                      elevation: 6,
+                      shadowColor: const Color(0xFFE50914).withValues(alpha: 0.5),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    onPressed: () => context.push('/watch/${movie.id}', extra: movie),
+                    icon: const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 28),
+                    label: const Text(
+                      'WATCH FULL MOVIE (FREE)',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(width: 20),
+                  ),
+                ),
+                const SizedBox(height: 12),
 
-                    // Watch Official Trailer (YouTube Connector) CTA Button
+                // Secondary Action Row: Watch Trailer + Download Torrent + Share
+                Row(
+                  children: [
+                    // Watch Trailer Button
                     Expanded(
                       child: SizedBox(
-                        height: 48,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFE50914),
-                            foregroundColor: AppColors.white,
-                            elevation: 0,
-                            shape: const StadiumBorder(),
+                        height: 44,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.white24),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                           onPressed: () {
                             trailersAsync.whenData((trailers) {
@@ -425,14 +436,43 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen> {
                               }
                             });
                           },
-                          icon: const Icon(Icons.play_circle_fill_rounded, size: 22, color: Colors.white),
+                          icon: const Icon(Icons.movie_outlined, size: 18, color: Colors.white),
                           label: const Text(
-                            'Watch Official Trailer',
+                            'Watch Trailer',
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.2,
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
                             ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+
+                    // Torrent Download Button
+                    SizedBox(
+                      height: 44,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.white24),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onPressed: () async {
+                          final streamService = MovieStreamService();
+                          final torrentUrl = streamService.getTorrentUrl(movie);
+                          final uri = Uri.parse(torrentUrl);
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        icon: const Icon(Icons.download_rounded, size: 18, color: Colors.white),
+                        label: const Text(
+                          'Torrent',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),

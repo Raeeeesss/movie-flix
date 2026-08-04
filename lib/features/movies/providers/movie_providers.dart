@@ -17,6 +17,18 @@ final movieRepositoryProvider = Provider<MovieRepository>((ref) {
 // Home screen category providers
 // ─────────────────────────────────────────────────────────────────────────────
 
+final featuredHeroMoviesProvider = FutureProvider<List<Movie>>((ref) async {
+  final repo = ref.watch(movieRepositoryProvider);
+  final catalog = repo.masterCatalog;
+  const heroIds = [693134, 558449, 619979, 1630047, 872585, 157336, 155];
+  final List<Movie> featured = [];
+  for (final id in heroIds) {
+    final found = catalog.where((m) => m.id == id).firstOrNull;
+    if (found != null) featured.add(found);
+  }
+  return featured.isNotEmpty ? featured : catalog.take(7).toList();
+});
+
 final trendingMoviesProvider = FutureProvider<List<Movie>>((ref) async {
   return ref.watch(movieRepositoryProvider).getTrendingMovies();
 });

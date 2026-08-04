@@ -12,7 +12,11 @@ class CastMember {
   });
 
   // Profile URL getter
-  String? get profileUrl => null;
+  String? get profileUrl {
+    if (profilePath == null || profilePath!.isEmpty) return null;
+    if (profilePath!.startsWith('http')) return profilePath;
+    return 'https://image.tmdb.org/t/p/w185$profilePath';
+  }
 
   factory CastMember.fromJson(Map<String, dynamic> json) {
     return CastMember(

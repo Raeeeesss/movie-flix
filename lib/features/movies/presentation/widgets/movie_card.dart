@@ -494,7 +494,7 @@ class LandscapeMovieCard extends ConsumerWidget {
                         ),
                       ),
 
-                      // Pill Tag (Top Right - e.g. "Series")
+                      // Pill Tag (Top Right - Language Badge)
                       Positioned(
                         top: 8, right: 8,
                         child: Container(
@@ -502,14 +502,14 @@ class LandscapeMovieCard extends ConsumerWidget {
                           decoration: BoxDecoration(
                             color: AppColors.cardBg.withValues(alpha: 0.85),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.white24, width: 0.5),
+                            border: Border.all(color: AppColors.primaryAccent.withValues(alpha: 0.5), width: 0.8),
                           ),
-                          child: const Text(
-                            'Series',
-                            style: TextStyle(
-                              color: AppColors.white,
+                          child: Text(
+                            movie.language,
+                            style: const TextStyle(
+                              color: AppColors.gold,
                               fontSize: 9,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ),

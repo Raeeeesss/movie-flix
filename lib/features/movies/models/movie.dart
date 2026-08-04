@@ -13,6 +13,14 @@ class Movie {
   final List<int> genreIds;
   final List<Genre> genres;
 
+  // Real Movie Streaming & Public Domain properties
+  final String? streamUrl;
+  final String? archiveId;
+  final String? torrentUrl;
+  final bool isFullMovieAvailable;
+  final String streamQuality;
+  final String licenseType;
+
   const Movie({
     required this.id,
     required this.title,
@@ -22,9 +30,15 @@ class Movie {
     required this.voteAverage,
     required this.releaseDate,
     this.runtime = 0,
-    this.language = 'Malayalam',
+    this.language = 'English',
     this.genreIds = const [],
     this.genres = const [],
+    this.streamUrl,
+    this.archiveId,
+    this.torrentUrl,
+    this.isFullMovieAvailable = true,
+    this.streamQuality = '1080p Full HD',
+    this.licenseType = 'Public Domain / Free Stream',
   });
 
   static const String fallbackBackdrop =

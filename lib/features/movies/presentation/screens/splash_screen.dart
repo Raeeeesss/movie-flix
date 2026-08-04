@@ -125,7 +125,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     Text(
                       AppConfig.appName.toUpperCase(),
                       style: const TextStyle(
-                        fontFamily: 'Outfit',
                         color: AppColors.white,
                         fontSize: 30,
                         fontWeight: FontWeight.w900,
@@ -151,7 +150,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           Text(
                             AppConfig.appTagline,
                             style: TextStyle(
-                              fontFamily: 'Outfit',
                               color: AppColors.gold,
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
