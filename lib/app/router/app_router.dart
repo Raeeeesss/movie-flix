@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/movies/models/movie.dart';
@@ -163,6 +164,64 @@ class _MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width >= 600;
 
+    if (isWide) {
+      return Scaffold(
+        backgroundColor: AppColors.primaryBg,
+        body: Row(
+          children: [
+            NavigationRail(
+              backgroundColor: const Color(0xFF0D0D0D),
+              selectedIndex: navigationShell.currentIndex,
+              onDestinationSelected: (index) {
+                navigationShell.goBranch(
+                  index,
+                  initialLocation: index == navigationShell.currentIndex,
+                );
+              },
+              labelType: NavigationRailLabelType.all,
+              selectedIconTheme: const IconThemeData(color: AppColors.primaryAccent),
+              selectedLabelTextStyle: const TextStyle(color: AppColors.primaryAccent, fontWeight: FontWeight.w700),
+              unselectedIconTheme: const IconThemeData(color: Color(0xFF888888)),
+              unselectedLabelTextStyle: const TextStyle(color: Color(0xFF888888)),
+              destinations: const [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home_rounded),
+                  label: Text('Home'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search_rounded),
+                  label: Text('Search'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.bookmark_border_rounded),
+                  selectedIcon: Icon(Icons.bookmark_rounded),
+                  label: Text('My List'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.person_outline_rounded),
+                  selectedIcon: Icon(Icons.person_rounded),
+                  label: Text('Profile'),
+                ),
+              ],
+            ),
+            const VerticalDivider(thickness: 1, width: 1, color: AppColors.divider),
+            Expanded(child: navigationShell),
+          ],
+        ),
+      );
+    }
+
+    final items = const [
+      _NavItemData(icon: Icons.home_outlined, selectedIcon: Icons.home_rounded, label: 'Home'),
+      _NavItemData(icon: Icons.search_outlined, selectedIcon: Icons.search_rounded, label: 'Search'),
+      _NavItemData(icon: Icons.bookmark_border_rounded, selectedIcon: Icons.bookmark_rounded, label: 'My List'),
+      _NavItemData(icon: Icons.person_outline_rounded, selectedIcon: Icons.person_rounded, label: 'Profile'),
+    ];
+
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -173,117 +232,128 @@ class _MainShell extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: AppColors.primaryBg,
-        body: isWide
-            ? Row(
-                children: [
-                  NavigationRail(
-                    backgroundColor: const Color(0xFF0D0D0D),
-                    selectedIndex: navigationShell.currentIndex,
-                    onDestinationSelected: (index) {
-                      navigationShell.goBranch(
-                        index,
-                        initialLocation: index == navigationShell.currentIndex,
-                      );
-                    },
-                    labelType: NavigationRailLabelType.all,
-                    selectedIconTheme: const IconThemeData(color: AppColors.primaryAccent),
-                    selectedLabelTextStyle: const TextStyle(color: AppColors.primaryAccent, fontWeight: FontWeight.w700),
-                    unselectedIconTheme: const IconThemeData(color: Color(0xFF888888)),
-                    unselectedLabelTextStyle: const TextStyle(color: Color(0xFF888888)),
-                    destinations: const [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.home_outlined),
-                        selectedIcon: Icon(Icons.home_rounded),
-                        label: Text('Home'),
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            // Active Tab Content View
+            Positioned.fill(
+              child: navigationShell,
+            ),
+
+            // Floating Glassmorphism Bottom Navigation Bar
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: bottomPadding > 0 ? bottomPadding + 6 : 16,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(32),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    child: Container(
+                      height: 64,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF141414).withValues(alpha: 0.72),
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.16),
+                          width: 1.2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            blurRadius: 24,
+                            spreadRadius: 2,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                       ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.search_outlined),
-                        selectedIcon: Icon(Icons.search_rounded),
-                        label: Text('Search'),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: List.generate(items.length, (index) {
+                          final isSelected = navigationShell.currentIndex == index;
+                          final item = items[index];
+
+                          return Expanded(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                navigationShell.goBranch(
+                                  index,
+                                  initialLocation: index == navigationShell.currentIndex,
+                                );
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeOutCubic,
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Animated Pill Indicator Behind Icon
+                                    AnimatedContainer(
+                                      duration: const Duration(milliseconds: 200),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? AppColors.primaryAccent.withValues(alpha: 0.22)
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Icon(
+                                        isSelected ? item.selectedIcon : item.icon,
+                                        size: 22,
+                                        color: isSelected
+                                            ? AppColors.primaryAccent
+                                            : Colors.white.withValues(alpha: 0.6),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      item.label,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? AppColors.primaryAccent
+                                            : Colors.white.withValues(alpha: 0.6),
+                                        fontSize: 10.5,
+                                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+                                        letterSpacing: -0.2,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
                       ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.bookmark_border_rounded),
-                        selectedIcon: Icon(Icons.bookmark_rounded),
-                        label: Text('My List'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.person_outline_rounded),
-                        selectedIcon: Icon(Icons.person_rounded),
-                        label: Text('Profile'),
-                      ),
-                    ],
+                    ),
                   ),
-                  const VerticalDivider(thickness: 1, width: 1, color: AppColors.divider),
-                  Expanded(child: navigationShell),
-                ],
-              )
-            : navigationShell,
-        bottomNavigationBar: isWide
-            ? null
-            : Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0D0D0D),
-                  border: Border(
-                    top: BorderSide(
-                      color: Colors.white.withValues(alpha: 0.10),
-                      width: 1,
-                    ),
-                  ),
-                ),
-                child: NavigationBar(
-                  backgroundColor: Colors.transparent,
-                  indicatorColor: AppColors.primaryAccent.withValues(alpha: 0.18),
-                  elevation: 0,
-                  height: 64,
-                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                  selectedIndex: navigationShell.currentIndex,
-                  onDestinationSelected: (index) {
-                    navigationShell.goBranch(
-                      index,
-                      initialLocation: index == navigationShell.currentIndex,
-                    );
-                  },
-                  destinations: [
-                    NavigationDestination(
-                      icon: Icon(Icons.home_outlined,
-                          color: navigationShell.currentIndex == 0
-                              ? AppColors.primaryAccent
-                              : const Color(0xFF888888)),
-                      selectedIcon: const Icon(Icons.home_rounded,
-                          color: AppColors.primaryAccent),
-                      label: 'Home',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.search_outlined,
-                          color: navigationShell.currentIndex == 1
-                              ? AppColors.primaryAccent
-                              : const Color(0xFF888888)),
-                      selectedIcon: const Icon(Icons.search_rounded,
-                          color: AppColors.primaryAccent),
-                      label: 'Search',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.bookmark_border_rounded,
-                          color: navigationShell.currentIndex == 2
-                              ? AppColors.primaryAccent
-                              : const Color(0xFF888888)),
-                      selectedIcon: const Icon(Icons.bookmark_rounded,
-                          color: AppColors.primaryAccent),
-                      label: 'My List',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.person_outline_rounded,
-                          color: navigationShell.currentIndex == 3
-                              ? AppColors.primaryAccent
-                              : const Color(0xFF888888)),
-                      selectedIcon: const Icon(Icons.person_rounded,
-                          color: AppColors.primaryAccent),
-                      label: 'Profile',
-                    ),
-                  ],
                 ),
               ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+class _NavItemData {
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+
+  const _NavItemData({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+  });
 }
